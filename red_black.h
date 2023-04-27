@@ -36,6 +36,7 @@ struct RBNode : Node {
 
 class RBTree : public BinarySearchTree {
 private:
+    int n;
     RBNode *root;
 protected:
     void rotateLeft(RBNode *&ptr) {
@@ -279,15 +280,31 @@ protected:
 public:
     RBTree() {
         root = nullptr;
+        n = 0;
     }
     void insert(long long n) {
         RBNode *node = new RBNode(n);
         root = _insert(root, node);
         fixInsert(node);
+        this->n++;
     }
     void erase(long long data) {
-        RBNode *node = _erase(root, data);
-        fixDelete(node);
+        if (n == 2) {
+            if (data == root->key) {
+                auto t = root;
+                root = t->left == nullptr ? t->right : t->left;
+                delete t;
+                root->color = 1;
+                root->parent = nullptr;
+            } else {
+                RBNode *node = _erase(root, data);
+                fixDelete(node);
+            }
+        } else {
+            RBNode *node = _erase(root, data);
+            fixDelete(node);
+        }
+        n--;
     }
     RBNode* find(long long x) {
         return _find(root, x);
